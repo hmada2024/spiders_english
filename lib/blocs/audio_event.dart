@@ -3,15 +3,9 @@ import 'dart:typed_data';
 
 abstract class AudioEvent {}
 
-class PlayAudioEvent extends AudioEvent {
+class PlayPronunciationEvent extends AudioEvent {
   final Uint8List audioData;
-  PlayAudioEvent(this.audioData);
+  PlayPronunciationEvent(this.audioData);
 }
 
 class StopAudioEvent extends AudioEvent {}
-
-// New event for direct playAudio call
-class PlayAudioDirectlyEvent extends AudioEvent {
-  final Uint8List audioData;
-  PlayAudioDirectlyEvent(this.audioData);
-}

@@ -9,45 +9,20 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
   final audio.AudioPlayer _audioPlayer = audio.AudioPlayer();
 
   AudioBloc() : super(AudioInitial()) {
-    on<PlayAudioEvent>(_onPlayAudio);
+    on<PlayPronunciationEvent>(
+        _onPlayAudio); // استخدام معالج واحد لحدث تشغيل الصوت
     on<StopAudioEvent>(_onStopAudio);
-    on<PlayAudioDirectlyEvent>(_onPlayAudioDirectly); // Add new handler
-  }
-
-  // New method for direct audio playback
-  Future<void> playAudio(Uint8List audioData) async {
-    debugPrint('AudioBloc: Received direct playAudio call');
-    add(PlayAudioDirectlyEvent(audioData)); // Dispatch the new event
   }
 
   Future<void> _onPlayAudio(
-      PlayAudioEvent event, Emitter<AudioState> emit) async {
+      PlayPronunciationEvent event, Emitter<AudioState> emit) async {
     debugPrint('AudioBloc: Received PlayAudioEvent');
     try {
       if (event.audioData.isEmpty) {
         debugPrint('AudioBloc: Audio data is empty, cannot play.');
         return;
       }
-      await _audioPlayer.stop(); // Stop any currently playing audio
-      await _audioPlayer.play(audio.BytesSource(event.audioData));
-      emit(AudioPlaying());
-      debugPrint('AudioBloc: Audio playback started.');
-    } catch (e) {
-      debugPrint("AudioBloc: Error playing audio: $e");
-    }
-  }
-
-  // New event handler for direct playback
-  Future<void> _onPlayAudioDirectly(
-      PlayAudioDirectlyEvent event, // Corrected type hint
-      Emitter<AudioState> emit) async {
-    debugPrint('AudioBloc: Received PlayAudioDirectlyEvent');
-    try {
-      if (event.audioData.isEmpty) {
-        debugPrint('AudioBloc: Audio data is empty, cannot play.');
-        return;
-      }
-      await _audioPlayer.stop(); // Stop any currently playing audio
+      await _audioPlayer.stop(); // إيقاف أي صوت قيد التشغيل حاليًا
       await _audioPlayer.play(audio.BytesSource(event.audioData));
       emit(AudioPlaying());
       debugPrint('AudioBloc: Audio playback started.');
