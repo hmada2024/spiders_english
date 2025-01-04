@@ -1,6 +1,8 @@
 // screens/nouns_page.dart
 import 'package:flutter/material.dart';
-import 'package:learn_box_english/constants/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_box_english/blocs/nouns_bloc.dart';
+import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/noun_model.dart';
 import 'package:learn_box_english/widgets/audio_player_widget.dart';
 import 'package:learn_box_english/widgets/data_loader.dart';
@@ -16,28 +18,34 @@ class NounsPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: DataLoader<NounModel>(
-          tableName: AppConstants.nounsTable,
-          fetchData: (dbHelper) => dbHelper.getNouns(),
-          fromJson: NounModel.fromJson,
-          builder: (context, nouns) {
-            return ListView.builder(
-              itemCount: nouns.length,
-              itemBuilder: (context, index) {
-                final noun = nouns[index];
-                return Card(
-                  child: ListTile(
-                    leading: noun.image != null
-                        ? Image.memory(noun.image!, width: 50, height: 50)
-                        : const Icon(Icons.image_not_supported),
-                    title: Text(noun.name),
-                    subtitle: Text(noun.category),
-                    trailing: AudioPlayerWidget(audioData: noun.audio),
-                  ),
-                );
-              },
-            );
-          },
+        child: BlocProvider(
+          create: (context) => NounsBloc(DatabaseHelper())..add(LoadNouns()),
+          child: DataLoader<NounsBloc, NounsState, NounModel>(
+            dataSelector: (state) {
+              if (state is NounsLoaded) {
+                return state.nouns;
+              }
+              return []; // Return an empty list by default
+            },
+            builder: (context, nouns) {
+              return ListView.builder(
+                itemCount: nouns.length,
+                itemBuilder: (context, index) {
+                  final noun = nouns[index];
+                  return Card(
+                    child: ListTile(
+                      leading: noun.image != null
+                          ? Image.memory(noun.image!, width: 50, height: 50)
+                          : const Icon(Icons.image_not_supported),
+                      title: Text(noun.name),
+                      subtitle: Text(noun.category),
+                      trailing: AudioPlayerWidget(audioData: noun.audio),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

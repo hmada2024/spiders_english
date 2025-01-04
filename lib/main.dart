@@ -1,17 +1,33 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_box_english/blocs/adjectives_bloc.dart';
 import 'package:learn_box_english/blocs/audio_bloc.dart';
+import 'package:learn_box_english/blocs/nouns_bloc.dart';
+import 'package:learn_box_english/blocs/verb_conjugations_bloc.dart';
 import 'package:learn_box_english/constants/constants.dart';
+import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/database/database_initializer.dart';
 import 'package:learn_box_english/screens/home_page.dart';
 
 void main() {
   initializeDatabase(); // Initialize database for Windows
   runApp(
-    BlocProvider(
-      // Ensure BlocProvider wraps the entire MaterialApp
-      create: (context) => AudioBloc(),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AudioBloc>(
+          create: (context) => AudioBloc(),
+        ),
+        BlocProvider<NounsBloc>(
+          create: (context) => NounsBloc(DatabaseHelper()),
+        ),
+        BlocProvider<AdjectivesBloc>(
+          create: (context) => AdjectivesBloc(DatabaseHelper()),
+        ),
+        BlocProvider<VerbConjugationsBloc>(
+          create: (context) => VerbConjugationsBloc(DatabaseHelper()),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

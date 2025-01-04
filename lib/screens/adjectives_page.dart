@@ -1,6 +1,8 @@
 // screens/adjectives_page.dart
 import 'package:flutter/material.dart';
-import 'package:learn_box_english/constants/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_box_english/blocs/adjectives_bloc.dart';
+import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/adjective_model.dart';
 import 'package:learn_box_english/widgets/audio_player_widget.dart';
 import 'package:learn_box_english/widgets/data_loader.dart';
@@ -16,25 +18,32 @@ class AdjectivesPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: DataLoader<AdjectiveModel>(
-          tableName: AppConstants.adjectivesTable,
-          fetchData: (dbHelper) => dbHelper.getAdjectives(),
-          fromJson: AdjectiveModel.fromJson,
-          builder: (context, adjectives) {
-            return ListView.builder(
-              itemCount: adjectives.length,
-              itemBuilder: (context, index) {
-                final adjective = adjectives[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(adjective.mainAdj),
-                    subtitle: Text(adjective.example),
-                    trailing: AudioPlayerWidget(audioData: adjective.audio),
-                  ),
-                );
-              },
-            );
-          },
+        child: BlocProvider(
+          create: (context) =>
+              AdjectivesBloc(DatabaseHelper())..add(LoadAdjectives()),
+          child: DataLoader<AdjectivesBloc, AdjectivesState, AdjectiveModel>(
+            dataSelector: (state) {
+              if (state is AdjectivesLoaded) {
+                return state.adjectives;
+              }
+              return []; // Return an empty list by default
+            },
+            builder: (context, adjectives) {
+              return ListView.builder(
+                itemCount: adjectives.length,
+                itemBuilder: (context, index) {
+                  final adjective = adjectives[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(adjective.mainAdj),
+                      subtitle: Text(adjective.example),
+                      trailing: AudioPlayerWidget(audioData: adjective.audio),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

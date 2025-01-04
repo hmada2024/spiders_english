@@ -9,8 +9,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
   final audio.AudioPlayer _audioPlayer = audio.AudioPlayer();
 
   AudioBloc() : super(AudioInitial()) {
-    on<PlayPronunciationEvent>(
-        _onPlayAudio); // استخدام معالج واحد لحدث تشغيل الصوت
+    on<PlayPronunciationEvent>(_onPlayAudio);
     on<StopAudioEvent>(_onStopAudio);
   }
 
@@ -22,7 +21,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
         debugPrint('AudioBloc: Audio data is empty, cannot play.');
         return;
       }
-      await _audioPlayer.stop(); // إيقاف أي صوت قيد التشغيل حاليًا
+      await _audioPlayer.stop(); // Stop any currently playing audio
       await _audioPlayer.play(audio.BytesSource(event.audioData));
       emit(AudioPlaying());
       debugPrint('AudioBloc: Audio playback started.');
