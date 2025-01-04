@@ -1,0 +1,30 @@
+name: learn_box_english
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  audioplayers: ^5.0.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.0.1
+  path: ^1.8.1
+  path_provider: ^2.1.5
+  sqflite: ^2.0.0+4
+  sqflite_common_ffi: ^2.3.4+4
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/just_take.db
+    - assets/audio/
+
+  uses-material-design: true

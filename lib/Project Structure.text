@@ -1,0 +1,20 @@
+lib/
+├── main.dart
+├── constants/
+│   └── app_constants.dart
+├── database/
+│   ├── database_helper.dart
+│   └── database_initializer.dart
+├── models/
+│   ├── adjective_model.dart
+│   ├── noun_model.dart
+│   └── verb_conjugation_model.dart
+├── blocs/
+│   ├── audio_bloc.dart
+│   └── audio_state.dart
+├── widgets/
+│   └── audio_player_widget.dart
+├── screens/
+│   ├── adjectives_page.dart
+│   ├── nouns_page.dart
+│   └── verb_conjugations_page.dart
