@@ -1,5 +1,6 @@
 // screens/verb_conjugations_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/verb_conjugations_bloc.dart';
 import 'package:learn_box_english/database/database_helper.dart';
@@ -35,11 +36,35 @@ class VerbConjugationsPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final verb = verbs[index];
                   return Card(
-                    child: ListTile(
-                      title: Text(verb.baseForm),
-                      subtitle: Text(
-                          'Past: ${verb.pastForm}, Past Participle: ${verb.pPForm}'),
-                      trailing: AudioPlayerWidget(audioData: verb.audioBlob),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(verb.baseForm,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                Text('(${verb.translation})',
+                                    style: const TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(child: Text(verb.pastForm)),
+                          ),
+                          Expanded(
+                            child: Center(child: Text(verb.pPForm)),
+                          ),
+                          SizedBox(
+                              width: 48,
+                              child:
+                                  AudioPlayerWidget(audioData: verb.audioBlob)),
+                        ],
+                      ),
                     ),
                   );
                 },

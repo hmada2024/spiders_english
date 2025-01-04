@@ -15,7 +15,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
 
   Future<void> _onPlayAudio(
       PlayPronunciationEvent event, Emitter<AudioState> emit) async {
-    debugPrint('AudioBloc: Received PlayAudioEvent');
+    debugPrint('AudioBloc: Received PlayPronunciationEvent');
     try {
       if (event.audioData.isEmpty) {
         debugPrint('AudioBloc: Audio data is empty, cannot play.');

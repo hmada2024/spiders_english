@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:learn_box_english/constants/constants.dart';
 import 'package:learn_box_english/screens/adjectives_page.dart';
 import 'package:learn_box_english/screens/nouns_page.dart';
+import 'package:learn_box_english/screens/settings_page.dart';
 import 'package:learn_box_english/screens/verb_conjugations_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,6 +18,17 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConstants.appName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(

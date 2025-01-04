@@ -1,6 +1,7 @@
 // database/database_helper.dart
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:learn_box_english/constants/constants.dart';
 import 'package:path/path.dart';
@@ -10,12 +11,37 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+  static Map<String, List<Map<String, dynamic>>> _cachedData = {};
+  static bool _isCacheEnabled = false;
 
   factory DatabaseHelper() {
     return _instance;
   }
 
   DatabaseHelper._internal();
+
+  static void enableCache() {
+    _isCacheEnabled = true;
+  }
+
+  static void disableCache() {
+    _isCacheEnabled = false;
+    _cachedData.clear();
+  }
+
+  static Future<void> cacheDatabase(Database db) async {
+    _cachedData[AppConstants.adjectivesTable] =
+        await db.query(AppConstants.adjectivesTable);
+    _cachedData[AppConstants.nounsTable] =
+        await db.query(AppConstants.nounsTable);
+    _cachedData[AppConstants.verbConjugationsTable] =
+        await db.query(AppConstants.verbConjugationsTable);
+    // Add other tables as needed
+  }
+
+  static void clearCache() {
+    _cachedData.clear();
+  }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -39,16 +65,27 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> getAdjectives() async {
+    if (_isCacheEnabled &&
+        _cachedData.containsKey(AppConstants.adjectivesTable)) {
+      return _cachedData[AppConstants.adjectivesTable]!;
+    }
     Database db = await database;
     return await db.query(AppConstants.adjectivesTable);
   }
 
   Future<List<Map<String, dynamic>>> getNouns() async {
+    if (_isCacheEnabled && _cachedData.containsKey(AppConstants.nounsTable)) {
+      return _cachedData[AppConstants.nounsTable]!;
+    }
     Database db = await database;
     return await db.query(AppConstants.nounsTable);
   }
 
   Future<List<Map<String, dynamic>>> getVerbConjugations() async {
+    if (_isCacheEnabled &&
+        _cachedData.containsKey(AppConstants.verbConjugationsTable)) {
+      return _cachedData[AppConstants.verbConjugationsTable]!;
+    }
     Database db = await database;
     return await db.query(AppConstants.verbConjugationsTable);
   }
