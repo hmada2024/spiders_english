@@ -6,7 +6,7 @@ A complete database file has been built.
 
     Database file structure :
 
-      " just_take.db "
+      " spiders_english_box.db "
 
 Table: Adjectives
   Column: id - Type: INTEGER
