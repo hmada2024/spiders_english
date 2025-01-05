@@ -24,6 +24,7 @@ dev_dependencies:
 
 flutter:
   assets:
+    - assets/spiders_english_box.db/spiders_english_box.db
     - assets/just_take.db
     - assets/audio/
 
