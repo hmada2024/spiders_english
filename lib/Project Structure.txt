@@ -84,42 +84,45 @@ LearnBox English employs a local **SQLite database** (`just_take.db`) to store a
 *   **Data Presentation:** The fetched data is typically transformed into model objects (e.g., `NounModel`) before being passed to the UI for display.
 
 **5. spider_english/
-├── assets/
-│   ├── audio/
-│   └── just_take.db
-├── lib/
-│   ├── blocs/
-│   │   ├── adjectives_bloc.dart
-│   │   ├── audio_bloc.dart
-│   │   ├── audio_event.dart
-│   │   ├── audio_state.dart
-│   │   ├── nouns_bloc.dart
-│   │   ├── verb_conjugations_bloc.dart
-│   ├── constants/
-│   │   └── constants.dart
-│   ├── database/
-│   │   ├── database_helper.dart
-│   │   └── database_initializer.dart
-│   ├── models/
-│   │   ├── adjective_model.dart
-│   │   ├── match_card_model.dart  // إضافة نموذج بيانات بطاقة المطابقة
-│   │   ├── noun_model.dart
-│   │   └── verb_conjugation_model.dart
-│   ├── screens/
-│   │   ├── adjectives_page.dart
-│   │   ├── home_page.dart
-│   │   ├── nouns_page.dart
-│   │   ├── settings_page.dart
-│   │   ├── verb_conjugations_page.dart
-│   │   └── games/             // مجلد جديد للألعاب
-│   │       └── matching_game_page.dart
-│   ├── widgets/
+lib/
+├── blocs/
+│   ├── adjectives_bloc.dart
+│   ├── audio_bloc.dart
+│   ├── audio_event.dart
+│   ├── audio_state.dart
+│   ├── english_sentences_bloc.dart
+│   ├── nouns_bloc.dart
+│   ├── verb_conjugations_bloc.dart
+├── constants/
+│   └── constants.dart
+├── database/
+│   ├── database_helper.dart
+│   └── database_initializer.dart
+├── models/
+│   ├── adjective_model.dart
+│   ├── english_sentence_model.dart
+│   ├── match_card_model.dart
+│   ├── noun_model.dart
+│   └── verb_conjugation_model.dart
+├── screens/
+│   ├── adjectives_page.dart
+│   ├── home_page.dart
+│   ├── nouns_page.dart
+│   ├── settings_page.dart
+│   ├── verb_conjugations_page.dart
+│   └── games/
+│       ├── fill_blanks_game_page.dart
+│       ├── matching_game_page.dart
+│       └── multiple_choice_game_page.dart
+├── widgets/
+│   ├── common/
 │   │   ├── audio_player_widget.dart
-│   │   ├── data_loader.dart
-│   │   ├── match_card_widget.dart      // إضافة ودجت بطاقة المطابقة
-│   │   ├── matching_game_controls.dart // إضافة ودجت عناصر تحكم اللعبة
-│   │   └── matching_game_grid.dart     // إضافة ودجت شبكة لعبة المطابقة
-│   └── main.dart
+│   │   └── data_loader.dart
+│   ├── matching_game/
+│   │   ├── matching_game_controls.dart
+│   │   ├── matching_game_grid.dart
+│   │   └── match_card_widget.dart
+└── main.dart
 └── Database file structure.txt
 تقرير مفصل عن تطبيق Spider English
 يقدم هذا التقرير نظرة شاملة على تطبيق Spider English بناءً على ملفات الكود المتوفرة. يغطي التقرير ميزات التطبيق، وبنيته، والمكتبات المستخدمة، وإدارة البيانات، وهيكل الملفات، ونقاط القوة، والتحسينات المحتملة.
