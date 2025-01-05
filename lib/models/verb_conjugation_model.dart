@@ -9,7 +9,9 @@ class VerbConjugationModel {
   final String pastForm;
   final String pPForm;
   final String verbType;
-  final Uint8List? audioBlob;
+  final Uint8List? basePronunciation; // تم التحديث من audioBlob
+  final Uint8List? pastPronunciation; // تمت الإضافة
+  final Uint8List? ppPronunciation; // تمت الإضافة
 
   VerbConjugationModel({
     required this.id,
@@ -18,7 +20,9 @@ class VerbConjugationModel {
     required this.pastForm,
     required this.pPForm,
     required this.verbType,
-    this.audioBlob,
+    this.basePronunciation,
+    this.pastPronunciation,
+    this.ppPronunciation,
   });
 
   factory VerbConjugationModel.fromJson(Map<String, dynamic> json) {
@@ -29,7 +33,12 @@ class VerbConjugationModel {
       pastForm: json[AppConstants.pastFormColumn] ?? "Exist is NULL",
       pPForm: json[AppConstants.pPFormColumn] ?? "Exist is NULL",
       verbType: json[AppConstants.verbTypeColumn] ?? "Exist is NULL",
-      audioBlob: json[AppConstants.audioBlobColumn] as Uint8List?,
+      basePronunciation: json[AppConstants.basePronunciationColumn]
+          as Uint8List?, // تم التحديث
+      pastPronunciation: json[AppConstants.pastPronunciationColumn]
+          as Uint8List?, // تمت الإضافة
+      ppPronunciation:
+          json[AppConstants.ppPronunciationColumn] as Uint8List?, // تمت الإضافة
     );
   }
 }
