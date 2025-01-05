@@ -24,16 +24,19 @@ class AppConstants {
       'spiders_english_box.db/spiders_english_box.db';
 
   // Table Names
-  static const String adjectivesTable = 'Adjectives';
+  static const String adjectivesTable =
+      'adjectives'; // تم التحديث إلى حروف صغيرة
   static const String nounsTable = 'nouns';
   static const String verbConjugationsTable = 'verb_conjugations';
-  static const String baseWordsTable = 'Base_Words';
-  static const String phrasalVerbsTable = 'Phrasal_verbs';
+  static const String verbsSeedsTable = 'verbs_seeds';
+  static const String phrasalVerbsTable =
+      'phrasal_verbs'; // تم التحديث إلى حروف صغيرة
   static const String compoundWordsTable = 'compound_words';
   static const String expressionsIdiomsTable = 'expressions_idioms';
-  static const String similarWordsTable = 'similar_words';
+  static const String verbsBranchesTable = 'verbs_branches';
   static const String englishSentencesTable = 'english_sentences';
-  static const String modalSemiModalVerbsTable = 'Modal_SemiModal_Verbs';
+  static const String modalSemiModalVerbsTable =
+      'modal_semi_modal_verbs'; // تم التحديث إلى حروف صغيرة
   static const String readingAndListeningTable = 'reading_and_listening';
   static const String sqliteSequenceTable = 'sqlite_sequence';
 
@@ -60,8 +63,8 @@ class AppConstants {
   static const String verbTypeColumn = 'verb_type';
   static const String audioBlobColumn = 'audio_blob';
 
-  // Base Words Table Columns
-  static const String baseWordColumn = 'base_word';
+  // Base Words Table Columns (تم التحديث ليناسب verbs_seeds)
+  static const String seedWordColumn = 'seed_word';
   static const String translationsColumn = 'translations';
   static const String examplesColumn = 'examples';
 
@@ -81,8 +84,8 @@ class AppConstants {
   static const String usageColumn = 'usage';
   static const String typeColumn = 'type';
 
-  // Similar Words Table Columns
-  static const String baseWordIdColumn = 'base_word_id';
+  // Similar Words Table Columns (تم التحديث ليناسب verbs_branches)
+  static const String seedIdColumn = 'seed_id';
   static const String similarWordColumn = 'similar_word';
 
   // English Sentences Table Columns
