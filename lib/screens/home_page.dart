@@ -5,9 +5,9 @@ import 'package:learn_box_english/screens/adjectives_page.dart';
 import 'package:learn_box_english/screens/nouns_page.dart';
 import 'package:learn_box_english/screens/settings_page.dart';
 import 'package:learn_box_english/screens/verb_conjugations_page.dart';
-import 'package:learn_box_english/screens/games/matching_game_page.dart'; // استيراد صفحة لعبة المطابقة
-import 'package:learn_box_english/screens/games/fill_blanks_game_page.dart'; // استيراد صفحة لعبة ملء الفراغات
-import 'package:learn_box_english/screens/games/multiple_choice_game_page.dart'; // استيراد صفحة لعبة الاختيار من متعدد
+import 'package:learn_box_english/screens/games/matching_game_page.dart';
+import 'package:learn_box_english/screens/games/fill_blanks_game_page.dart';
+import 'package:learn_box_english/screens/games/multiple_choice_game_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
