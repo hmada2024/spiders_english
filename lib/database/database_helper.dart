@@ -1,6 +1,7 @@
 // database/database_helper.dart
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:learn_box_english/constants/constants.dart';
 import 'package:path/path.dart';
@@ -10,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
-  static final Map<String, List<Map<String, dynamic>>> _cachedData = {};
+  static Map<String, List<Map<String, dynamic>>> _cachedData = {};
   static bool _isCacheEnabled = false;
 
   factory DatabaseHelper() {
@@ -52,6 +53,11 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, AppConstants.databaseName);
 
+    // إنشاء الدليل إذا لم يكن موجودًا
+    if (!await Directory(dirname(path)).exists()) {
+      await Directory(dirname(path)).create(recursive: true);
+    }
+
     if (!await databaseExists(path)) {
       ByteData data =
           await rootBundle.load('assets/${AppConstants.databaseName}');
@@ -87,5 +93,10 @@ class DatabaseHelper {
     }
     Database db = await database;
     return await db.query(AppConstants.verbConjugationsTable);
+  }
+
+  Future<List<Map<String, dynamic>>> getEnglishSentences() async {
+    Database db = await database;
+    return await db.query(AppConstants.englishSentencesTable);
   }
 }

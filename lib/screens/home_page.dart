@@ -5,6 +5,9 @@ import 'package:learn_box_english/screens/adjectives_page.dart';
 import 'package:learn_box_english/screens/nouns_page.dart';
 import 'package:learn_box_english/screens/settings_page.dart';
 import 'package:learn_box_english/screens/verb_conjugations_page.dart';
+import 'package:learn_box_english/screens/games/matching_game_page.dart'; // استيراد صفحة لعبة المطابقة
+import 'package:learn_box_english/screens/games/fill_blanks_game_page.dart'; // استيراد صفحة لعبة ملء الفراغات
+import 'package:learn_box_english/screens/games/multiple_choice_game_page.dart'; // استيراد صفحة لعبة الاختيار من متعدد
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -82,6 +85,55 @@ class HomePage extends StatelessWidget {
                       );
                     },
                     child: const Text('Verb Conjugations'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: buttonPadding,
+                child: SizedBox(
+                  width: buttonWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MatchingGamePage()),
+                      );
+                    },
+                    child: const Text('Matching Game'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: buttonPadding,
+                child: SizedBox(
+                  width: buttonWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FillBlanksGamePage()),
+                      );
+                    },
+                    child: const Text('Fill in the Blanks'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: buttonPadding,
+                child: SizedBox(
+                  width: buttonWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const MultipleChoiceGamePage()),
+                      );
+                    },
+                    child: const Text('Multiple Choice Quiz'),
                   ),
                 ),
               ),

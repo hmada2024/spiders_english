@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   // App
-  static const String appName = 'LearnBox English';
+  static const String appName = 'Spider English';
 
   // Colors
   static const Color primaryColor = Color(0xFF4CAF50);
@@ -20,7 +20,8 @@ class AppConstants {
   static const String fontFamily = 'Roboto';
 
   // Database
-  static const String databaseName = 'just_take.db';
+  static const String databaseName =
+      'spiders_english_box.db/spiders_english_box.db';
 
   // Table Names
   static const String adjectivesTable = 'Adjectives';
