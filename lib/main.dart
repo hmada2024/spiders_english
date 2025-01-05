@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/adjectives_bloc.dart';
 import 'package:learn_box_english/blocs/audio_bloc.dart';
+import 'package:learn_box_english/blocs/english_sentences_bloc.dart';
 import 'package:learn_box_english/blocs/nouns_bloc.dart';
 import 'package:learn_box_english/blocs/verb_conjugations_bloc.dart';
 import 'package:learn_box_english/constants/constants.dart';
@@ -26,6 +27,9 @@ void main() {
         ),
         BlocProvider<VerbConjugationsBloc>(
           create: (context) => VerbConjugationsBloc(DatabaseHelper()),
+        ),
+        BlocProvider<EnglishSentencesBloc>(
+          create: (context) => EnglishSentencesBloc(DatabaseHelper()),
         ),
       ],
       child: const MyApp(),
