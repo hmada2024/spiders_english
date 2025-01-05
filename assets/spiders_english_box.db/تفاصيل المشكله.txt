@@ -1,0 +1,673 @@
+بناءً على المشكلة الحالية وهي ظهور رسالة "صوت غير صالح" عند محاولة تشغيل الصوت من قاعدة البيانات بعد تحديثها، هناك مجموعة من الملفات التي أحتاجها لمساعدتك في تشخيص المشكلة بشكل فعال. يرجى تزويدي بمحتوى هذه الملفات:
+
+database/database_helper.dart: هذا الملف مسؤول عن التعامل مع قاعدة البيانات، بما في ذلك استرجاع البيانات. أحتاج إلى رؤية كيف تقوم باستعلام جدول verb_conjugations وكيف تحصل على بيانات عمود الصوت (base_pronunciation).
+
+models/verb_conjugation_model.dart: هذا الملف يحدد بنية بيانات الأفعال وكيف يتم تحويل البيانات المسترجعة من قاعدة البيانات إلى كائنات VerbConjugationModel. أريد التأكد من أنك تتعامل مع عمود basePronunciation بشكل صحيح كـ Uint8List?.
+
+blocs/audio_bloc.dart: هذا الملف يحتوي على منطق تشغيل الصوت باستخدام audioplayers. أريد مراجعة كيفية استقبال حدث PlayPronunciationEvent وكيف يتم استخدام بيانات الصوت لتشغيل الصوت.
+
+blocs/audio_event.dart: هذا الملف يعرف الأحداث المتعلقة بـ AudioBloc، وبالأخص حدث PlayPronunciationEvent. أريد التأكد من أن هذا الحدث يستقبل بيانات الصوت بشكل صحيح.
+
+screens/verb_conjugations_page.dart: هذا الملف يحتوي على الواجهة التي تعرض قائمة الأفعال وتستدعي تشغيل الصوت عند الضغط على الكلمة. أريد رؤية كيف يتم استدعاء AudioBloc وتمرير بيانات الصوت.
+
+constants/app_constants.dart: هذا الملف يعرف الثوابت المستخدمة في التطبيق، بما في ذلك أسماء جداول وأعمدة قاعدة البيانات. أريد التأكد من أن اسم عمود الصوت (basePronunciationColumn) صحيح ومتطابق في جميع الملفات.
+// database/database_helper.dart
+import 'dart:async';
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:learn_box_english/constants/constants.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+
+class DatabaseHelper {
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
+  static Database? _database;
+  static final Map<String, List<Map<String, dynamic>>> _cachedData = {};
+  static bool _isCacheEnabled = false;
+
+  factory DatabaseHelper() {
+    return _instance;
+  }
+
+  DatabaseHelper._internal();
+
+  static void enableCache() {
+    _isCacheEnabled = true;
+  }
+
+  static void disableCache() {
+    _isCacheEnabled = false;
+    _cachedData.clear();
+  }
+
+  static Future<void> cacheDatabase(Database db) async {
+    _cachedData[AppConstants.adjectivesTable] =
+        await db.query(AppConstants.adjectivesTable);
+    _cachedData[AppConstants.nounsTable] =
+        await db.query(AppConstants.nounsTable);
+    _cachedData[AppConstants.verbConjugationsTable] =
+        await db.query(AppConstants.verbConjugationsTable);
+    // Add other tables as needed
+  }
+
+  static void clearCache() {
+    _cachedData.clear();
+  }
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, AppConstants.databaseName);
+
+    // إنشاء الدليل إذا لم يكن موجودًا
+    if (!await Directory(dirname(path)).exists()) {
+      await Directory(dirname(path)).create(recursive: true);
+    }
+
+    if (!await databaseExists(path)) {
+      ByteData data =
+          await rootBundle.load('assets/${AppConstants.databaseName}');
+      List<int> bytes =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      await File(path).writeAsBytes(bytes);
+    }
+
+    return await openDatabase(path);
+  }
+
+  Future<List<Map<String, dynamic>>> getAdjectives() async {
+    if (_isCacheEnabled &&
+        _cachedData.containsKey(AppConstants.adjectivesTable)) {
+      return _cachedData[AppConstants.adjectivesTable]!;
+    }
+    Database db = await database;
+    return await db.query(AppConstants.adjectivesTable);
+  }
+
+  Future<List<Map<String, dynamic>>> getNouns() async {
+    if (_isCacheEnabled && _cachedData.containsKey(AppConstants.nounsTable)) {
+      return _cachedData[AppConstants.nounsTable]!;
+    }
+    Database db = await database;
+    return await db.query(AppConstants.nounsTable);
+  }
+
+  Future<List<Map<String, dynamic>>> getVerbConjugations() async {
+    if (_isCacheEnabled &&
+        _cachedData.containsKey(AppConstants.verbConjugationsTable)) {
+      return _cachedData[AppConstants.verbConjugationsTable]!;
+    }
+    Database db = await database;
+    return await db.query(AppConstants.verbConjugationsTable);
+  }
+
+  Future<List<Map<String, dynamic>>> getEnglishSentences() async {
+    Database db = await database;
+    return await db.query(AppConstants.englishSentencesTable);
+  }
+}
+// screens/verb_conjugations_page.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_box_english/blocs/verb_conjugations_bloc.dart';
+import 'package:learn_box_english/database/database_helper.dart';
+import 'package:learn_box_english/models/verb_conjugation_model.dart';
+import 'package:learn_box_english/widgets/common/data_loader.dart';
+import 'package:learn_box_english/blocs/audio_bloc.dart'; // أضف استيراد AudioBloc
+import 'package:learn_box_english/blocs/audio_event.dart'; // أضف استيراد AudioEvent
+
+class VerbConjugationsPage extends StatelessWidget {
+  const VerbConjugationsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Verb Conjugations'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: BlocProvider(
+          create: (context) =>
+              VerbConjugationsBloc(DatabaseHelper())..add(LoadVerbs()),
+          child: DataLoader<VerbConjugationsBloc, VerbConjugationsState,
+              VerbConjugationModel>(
+            dataSelector: (state) {
+              if (state is VerbsLoaded) {
+                return state.verbs;
+              }
+              return []; // Corrected: Return an empty list by default
+            },
+            builder: (context, verbs) {
+              return ListView.separated(
+                itemCount: verbs.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 8.0),
+                itemBuilder: (context, index) {
+                  final verb = verbs[index];
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // جعل النص قابل للنقر لتشغيل الصوت
+                                GestureDetector(
+                                  onTap: () {
+                                    if (verb.basePronunciation != null &&
+                                        verb.basePronunciation!.isNotEmpty) {
+                                      context.read<AudioBloc>().add(
+                                            PlayPronunciationEvent(
+                                                verb.basePronunciation!),
+                                          );
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Audio not available.')),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    verb.baseForm,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                      color: Colors
+                                          .blue, // تغيير لون النص للإشارة إلى أنه قابل للنقر
+                                    ),
+                                  ),
+                                ),
+                                Text('(${verb.translation})',
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade600)),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(child: Text(verb.pastForm)),
+                          ),
+                          Expanded(
+                            child: Center(child: Text(verb.pPForm)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+// models/verb_conjugation_model.dart
+import 'dart:typed_data';
+import 'package:learn_box_english/constants/constants.dart';
+
+class VerbConjugationModel {
+  final int id;
+  final String baseForm;
+  final String translation;
+  final String pastForm;
+  final String pPForm;
+  final String verbType;
+  final Uint8List? basePronunciation; // تم التحديث من audioBlob
+  final Uint8List? pastPronunciation; // تمت الإضافة
+  final Uint8List? ppPronunciation; // تمت الإضافة
+
+  VerbConjugationModel({
+    required this.id,
+    required this.baseForm,
+    required this.translation,
+    required this.pastForm,
+    required this.pPForm,
+    required this.verbType,
+    this.basePronunciation,
+    this.pastPronunciation,
+    this.ppPronunciation,
+  });
+
+  factory VerbConjugationModel.fromJson(Map<String, dynamic> json) {
+    return VerbConjugationModel(
+      id: json[AppConstants.idColumn] as int,
+      baseForm: json[AppConstants.baseFormColumn] ?? "Exist is NULL",
+      translation: json[AppConstants.translationColumn] ?? "Exist is NULL",
+      pastForm: json[AppConstants.pastFormColumn] ?? "Exist is NULL",
+      pPForm: json[AppConstants.pPFormColumn] ?? "Exist is NULL",
+      verbType: json[AppConstants.verbTypeColumn] ?? "Exist is NULL",
+      basePronunciation: json[AppConstants.basePronunciationColumn]
+          as Uint8List?, // تم التحديث
+      pastPronunciation: json[AppConstants.pastPronunciationColumn]
+          as Uint8List?, // تمت الإضافة
+      ppPronunciation:
+          json[AppConstants.ppPronunciationColumn] as Uint8List?, // تمت الإضافة
+    );
+  }
+}
+// blocs/audio_bloc.dart
+import 'package:audioplayers/audioplayers.dart' as audio;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'audio_event.dart';
+import 'audio_state.dart';
+
+class AudioBloc extends Bloc<AudioEvent, AudioState> {
+  final audio.AudioPlayer _audioPlayer = audio.AudioPlayer();
+
+  AudioBloc() : super(AudioInitial()) {
+    on<PlayPronunciationEvent>(_onPlayAudio);
+    on<StopAudioEvent>(_onStopAudio);
+  }
+
+  Future<void> _onPlayAudio(
+      PlayPronunciationEvent event, Emitter<AudioState> emit) async {
+    debugPrint('AudioBloc: Received PlayPronunciationEvent');
+    try {
+      if (event.audioData.isEmpty) {
+        debugPrint('AudioBloc: Audio data is empty, cannot play.');
+        return;
+      }
+      await _audioPlayer.stop(); // Stop any currently playing audio
+      await _audioPlayer.play(audio.BytesSource(event.audioData));
+      emit(AudioPlaying());
+      debugPrint('AudioBloc: Audio playback started.');
+    } catch (e) {
+      debugPrint("AudioBloc: Error playing audio: $e");
+    }
+  }
+
+  Future<void> _onStopAudio(
+      StopAudioEvent event, Emitter<AudioState> emit) async {
+    debugPrint('AudioBloc: Received StopAudioEvent');
+    await _audioPlayer.stop();
+    emit(AudioStopped());
+    debugPrint('AudioBloc: Audio playback stopped.');
+  }
+
+  @override
+  Future<void> close() {
+    debugPrint('AudioBloc closed.');
+    _audioPlayer.dispose();
+    return super.close();
+  }
+}
+// blocs/audio_event.dart
+import 'dart:typed_data';
+
+abstract class AudioEvent {}
+
+class PlayPronunciationEvent extends AudioEvent {
+  final Uint8List audioData;
+  PlayPronunciationEvent(this.audioData);
+}
+// constants/app_constants.dart
+import 'package:flutter/material.dart';
+
+class AppConstants {
+  // App
+  static const String appName = 'Spider English';
+
+  // Colors
+  static const Color primaryColor = Color(0xFF4CAF50);
+  static const Color primaryColorLight = Color(0xFFC8E6C9);
+  static const Color primaryColorDark = Color(0xFF388E3C);
+  static const Color accentColor = Color(0xFFFFC107);
+  static const Color errorColor = Color(0xFFD32F2F);
+  static const Color textColorPrimary = Color(0xFF212121);
+  static const Color textColorSecondary = Color(0xFF757575);
+  static const Color backgroundColor = Colors.white;
+  static const Color cardColor = Colors.white;
+
+  // Font
+  static const String fontFamily = 'Roboto';
+
+  // Database
+  static const String databaseName =
+      'spiders_english_box.db/spiders_english_box.db';
+
+  // Table Names
+  static const String adjectivesTable = 'adjectives';
+  static const String nounsTable = 'nouns';
+  static const String verbConjugationsTable = 'verb_conjugations';
+  static const String verbsSeedsTable = 'verbs_seeds';
+  static const String phrasalVerbsTable = 'phrasal_verbs';
+  static const String compoundWordsTable = 'compound_words';
+  static const String expressionsIdiomsTable = 'expressions_idioms';
+  static const String verbsBranchesTable = 'verbs_branches';
+  static const String englishSentencesTable = 'english_sentences';
+  static const String modalSemiModalVerbsTable = 'modal_semi_modal_verbs';
+  static const String readingAndListeningTable = 'reading_and_listening';
+  static const String sqliteSequenceTable = 'sqlite_sequence';
+
+  // Common Column Names
+  static const String idColumn = 'id';
+  static const String audioColumn = 'audio';
+
+  // Adjectives Table Columns
+  static const String mainAdjColumn = 'main_adj';
+  static const String exampleColumn = 'example';
+  static const String reverseAdjColumn = 'reverse_adj';
+  static const String revExampleColumn = 'rev_example';
+
+  // Nouns Table Columns
+  static const String nameColumn = 'name';
+  static const String imageColumn = 'image';
+  static const String categoryColumn = 'category';
+
+  // Verb Conjugations Table Columns
+  static const String baseFormColumn = 'base_form';
+  static const String translationColumn = 'translation';
+  static const String pastFormColumn = 'past_form';
+  static const String pPFormColumn = 'p_p_form';
+  static const String verbTypeColumn = 'verb_type';
+  static const String basePronunciationColumn =
+      'base_pronunciation'; // تم التحديث من audio_blob
+  static const String pastPronunciationColumn =
+      'past_pronunciation'; // تمت الإضافة
+  static const String ppPronunciationColumn = 'pp_pronunciation'; // تمت الإضافة
+
+  // Base Words Table Columns (تم التحديث ليناسب verbs_seeds)
+  static const String seedWordColumn = 'seed_word';
+  static const String translationsColumn = 'translations';
+  static const String examplesColumn = 'examples';
+
+  // Phrasal Verbs Table Columns
+  static const String expressionColumn = 'expression';
+  static const String mainVerbColumn = 'main_verb';
+  static const String particleColumn = 'particle';
+  static const String meaningColumn = 'meaning';
+  static const String phrasalVerbTranslationColumn = 'translation';
+
+  // Compound Words Table Columns
+  static const String mainColumn = 'main';
+  static const String part1Column = 'part1';
+  static const String part2Column = 'part2';
+
+  // Expressions Idioms Table Columns
+  static const String usageColumn = 'usage';
+  static const String typeColumn = 'type';
+
+  // Similar Words Table Columns (تم التحديث ليناسب verbs_branches)
+  static const String seedIdColumn = 'seed_id';
+  static const String similarWordColumn = 'similar_word';
+
+  // English Sentences Table Columns
+  static const String sentenceColumn = 'sentence';
+  static const String answerColumn = 'answer';
+  static const String sentenceTranslationColumn = 'translation';
+
+  // Modal Semi Modal Verbs Table Columns
+  static const String modalMainColumn = 'main';
+  static const String tenseColumn = 'tense';
+  static const String modalTypeColumn = 'type';
+  static const String modalTranslationColumn = 'translation';
+
+  // Reading and Listening Table Columns
+  static const String titleColumn = 'title';
+  static const String contentColumn = 'content';
+  static const String soundColumn = 'sound';
+  static const String readingTranslationColumn = 'translation';
+  static const String readingTypeColumn = 'type';
+}
+
+class StopAudioEvent extends AudioEvent {}
+
+واليك الجدول كمان في sqlite  الملف 
+TABLE "verb_conjugations" (
+	"id"	INTEGER,
+	"base_form"	TEXT NOT NULL UNIQUE,
+	"translation"	TEXT,
+	"past_form"	TEXT,
+	"p_p_form"	TEXT,
+	"verb_type"	TEXT NOT NULL CHECK("verb_type" IN ('regular', 'irregular')),
+	"base_pronunciation"	BLOB, past_pronunciation BLOB, pp_pronunciation BLOB,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+بعد مراجعة دقيقة للنسخة القديمة من الكود ومقارنتها بالنسخة الحالية، اتضح الآتي:
+
+الاختلافات الرئيسية بين النسختين:
+
+اسم عمود الصوت في VerbConjugationModel:
+
+النسخة القديمة (verb_conjugation_model.txt): كان اسم عمود الصوت audioBlob.
+
+النسخة الحالية (models/verb_conjugation_model.dart): تم تغييره إلى basePronunciation، بالإضافة إلى إضافة عمودين آخرين هما pastPronunciation و ppPronunciation.
+
+طريقة عرض وتشغيل الصوت في verb_conjugations_page.dart:
+
+النسخة القديمة (verb_conjugations_page.txt): كانت تستخدم AudioPlayerWidget كويدجت منفصلة لتشغيل الصوت، وكانت تمرر لها verb.audioBlob.
+
+النسخة الحالية (screens/verb_conjugations_page.dart): تمت إزالة AudioPlayerWidget، وأصبح تشغيل الصوت يتم مباشرة داخل onTap على الكلمة، ويتم استدعاء AudioBloc وتمرير verb.basePronunciation!.
+
+اسم عمود الصوت في AppConstants:
+
+النسخة القديمة: على الأرجح كان اسم عمود الصوت في AppConstants هو audioBlobColumn. (لم يتم إرسال هذا الملف من النسخة القديمة ولكن هذا استنتاج منطقي).
+
+النسخة الحالية (constants/app_constants.dart): اسم عمود الصوت هو basePronunciationColumn.
+
+السبب المحتمل للمشكلة:
+
+بناءً على هذه الاختلافات، السبب الأكثر احتمالاً لمشكلة "صوت غير صالح" هو عدم تطابق اسم عمود الصوت بين قاعدة البيانات وكود Flutter بعد التحديث.
+
+في النسخة القديمة، كان كود Flutter يبحث عن بيانات الصوت في عمود اسمه audioBlob. بعد التحديث، تم تغيير الاسم في كود Flutter إلى basePronunciation، ولكن على الأرجح قاعدة البيانات لا تزال تحتوي على عمود الصوت باسم audio_blob وليس base_pronunciation.
+
+نتيجة لذلك، عندما يسترجع تطبيق Flutter البيانات من قاعدة البيانات، فإنه لا يجد عمودًا باسم base_pronunciation (أو يجده فارغًا إذا كان التحديث قد أضاف العمود الجديد ولكن لم يتم ملؤه بالبيانات)، وبالتالي تكون قيمة verb.basePronunciation في تطبيق Flutter هي null. وعند محاولة تشغيل null باستخدام audioplayers، يحدث الخطأ "صوت غير صالح".
+تأكيد اسم العمود في قاعدة البيانات: تأكد مرة أخرى باستخدام برنامج تصفح قاعدة البيانات من أن اسم عمود الصوت في جدول verb_conjugations هو audio_blob وليس base_pronunciation.
+
+تحديث اسم العمود في كود Flutter (إذا لزم الأمر):
+
+الخيار الأول (الأسهل إذا كانت قاعدة البيانات لم تتغير): إذا كان اسم العمود في قاعدة البيانات لا يزال audio_blob، فببساطة قم بتعديل اسم العمود في ملفات Flutter ليتطابق مع اسم العمود في قاعدة البيانات:
+
+في constants/app_constants.dart: قم بتغيير basePronunciationColumn إلى audioColumn أو audioBlobColumn.
+
+في models/verb_conjugation_model.dart: قم بتغيير اسم المتغير basePronunciation إلى audioBlob، وقم بتغيير اسم الخاصية في fromJson من AppConstants.basePronunciationColumn إلى AppConstants.audioBlobColumn.
+
+في screens/verb_conjugations_page.dart: قم بتغيير verb.basePronunciation! إلى verb.audioBlob (إذا عدت لاستخدام AudioPlayerWidget) أو عدل طريقة تمرير البيانات إلى AudioBloc إذا كنت تستخدم الطريقة الجديدة.
+
+الخيار الثاني (إذا تم تغيير قاعدة البيانات فعلًا): إذا كنت قد قمت بتحديث قاعدة البيانات بالفعل وغيرت اسم العمود إلى base_pronunciation (بالإضافة إلى past_pronunciation و pp_pronunciation)، فتأكد من أن البيانات الصوتية موجودة فعلًا في هذه الأعمدة الجديدة. إذا كانت قاعدة البيانات تحتوي على الأعمدة الجديدة ولكنها فارغة، فستحتاج إلى نقل البيانات الصوتية من عمود audio_blob القديم إلى الأعمدة الجديدة.
+
+النظر في استخدام الأعمدة الجديدة: إذا كنت تخطط للاستفادة من وجود أعمدة منفصلة للنطق في الأزمنة المختلفة (pastPronunciation و ppPronunciation)، فستحتاج إلى تعديل الكود بشكل أكبر في verb_conjugations_page.dart أو في AudioPlayerWidget (إذا كنت ستعيد استخدامه) لتحديد أي نطق يتم تشغيله بناءً على سياق معين.
+
+بشكل عام، يبدو أن المشكلة الأساسية هي عدم التناسق في أسماء الأعمدة بين قاعدة البيانات وكود Flutter بعد التحديث. بمجرد التأكد من اسم العمود في قاعدة البيانات وتعديل كود Flutter ليتطابق معه، من المفترض أن تعود الأمور إلى طبيعتها.
+
+الآن، بناءً على هذه المعلومات، يرجى القيام بالخطوة الأولى وهي تأكيد اسم عمود الصوت في قاعدة البيانات وإخباري بالنتيجة. هذا سيحدد المسار الصحيح لتعديل الكود.
+ممتاز! إرسال مخطط قاعدة البيانات هو بالضبط ما نحتاجه الآن للتأكد من أسماء الأعمدة. بمجرد أن أحصل على المخطط، سأتمكن من التحقق من اسم عمود الصوت في جدول verb_conjugations ومطابقته مع الأسماء المستخدمة في كود Flutter. هذا سيساعدنا بشكل قاطع في تحديد الخطوة التالية لحل المشكلة. أنا في انتظار المخطط!
+
+7.9s
+Table: sqlite_sequence
+Column: name - Type:
+Column: seq - Type:
+
+Table: reading_and_listening
+Column: id - Type: INTEGER
+Column: title - Type: TEXT
+Column: content - Type: TEXT
+Column: sound - Type: BLOB
+Column: translation - Type: TEXT
+Column: type - Type: TEXT
+
+Table: verb_conjugations
+Column: id - Type: INTEGER
+Column: base_form - Type: TEXT
+Column: translation - Type: TEXT
+Column: past_form - Type: TEXT
+Column: p_p_form - Type: TEXT
+Column: verb_type - Type: TEXT
+Column: base_pronunciation - Type: BLOB
+Column: past_pronunciation - Type: BLOB
+Column: pp_pronunciation - Type: BLOB
+Indexes:
+Index Name: sqlite_autoindex_verb_conjugations_1
+Column: base_form
+
+Table: expressions_idioms
+Column: id - Type: INTEGER
+Column: expression - Type: TEXT
+Column: meaning - Type: TEXT
+Column: example - Type: TEXT
+Column: usage - Type: TEXT
+Column: type - Type: TEXT
+Column: audio - Type: BLOB
+Indexes:
+Index Name: sqlite_autoindex_expressions_idioms_1
+Column: expression
+
+Table: english_sentences
+Column: id - Type: INTEGER
+Column: sentence - Type: TEXT
+Column: answer - Type: TEXT
+Column: translation - Type: TEXT
+
+Table: modal_semi_modal_verbs
+Column: id - Type: INTEGER
+Column: main - Type: TEXT
+Column: example - Type: TEXT
+Column: tense - Type: TEXT
+Column: type - Type: TEXT
+Column: translation - Type: TEXT
+
+Table: nouns
+Column: id - Type: INTEGER
+Column: name - Type: TEXT
+Column: image - Type: BLOB
+Column: audio - Type: BLOB
+Column: category - Type: TEXT
+Indexes:
+Index Name: sqlite_autoindex_nouns_1
+Column: name
+
+Table: default_assets
+Column: id - Type: INTEGER
+Column: category - Type: TEXT
+Column: image - Type: BLOB
+Column: audio - Type: BLOB
+
+Table: verbs_seeds
+Column: id - Type: INTEGER
+Column: seed_word - Type: TEXT
+Column: translations - Type: TEXT
+Column: examples - Type: TEXT
+Column: audio - Type: BLOB
+Indexes:
+Index Name: sqlite_autoindex_verbs_seeds_1
+Column: seed_word
+
+Table: verbs_branches
+Column: id - Type: INTEGER
+Column: seed_id - Type: INTEGER
+Column: similar_word - Type: TEXT
+Column: translations - Type: TEXT
+Column: examples - Type: TEXT
+Column: audio - Type: BLOB
+Foreign Keys:
+From Column: seed_id - To Table: verbs_seeds - To Column: id
+
+Table: adjectives
+Column: id - Type: INTEGER
+Column: main_adj - Type: TEXT
+Column: example - Type: TEXT
+Column: reverse_adj - Type: TEXT
+Column: rev_example - Type: TEXT
+Column: audio - Type: BLOB
+Indexes:
+Index Name: uc_Adjectives
+Column: main_adj
+Column: reverse_adj
+Index Name: idx_Adjectives
+Column: main_adj
+Column: reverse_adj
+
+Table: phrasal_verbs
+Column: id - Type: INTEGER
+Column: expression - Type: TEXT
+Column: main_verb - Type: TEXT
+Column: particle - Type: TEXT
+Column: meaning - Type: TEXT
+Column: example - Type: TEXT
+Column: translation - Type: TEXT
+Column: audio - Type: BLOB
+
+Table: compound_words
+Column: id - Type: INTEGER
+Column: main - Type: TEXT
+Column: part1 - Type: TEXT
+Column: part2 - Type: TEXT
+Column: example - Type: TEXT
+Column: audio - Type: BLOB
+
+The user has sent the database schema. The key is to look at the verb_conjugations table and identify the names of the columns related to audio pronunciation.
+
+Looking at the schema for verb_conjugations:
+
+base_pronunciation - Type: BLOB
+
+past_pronunciation - Type: BLOB
+
+pp_pronunciation - Type: BLOB
+
+This confirms that the current naming convention in the Flutter code (basePronunciationColumn, pastPronunciationColumn, ppPronunciationColumn) matches the database schema.
+
+The previous issue was identified as flutter: VerbConjugationsBloc: basePronunciation of the first verb: null. This means that while the column exists in the database, the data itself might be null for the first verb.
+
+Therefore, the next step is to ask the user to check the actual data in the base_pronunciation column for some entries in the verb_conjugations table using a database browser.شكرًا جزيلاً على مخطط قاعدة البيانات!
+
+بفحص مخطط جدول verb_conjugations، نرى أسماء الأعمدة الخاصة بالنطق بوضوح:
+
+base_pronunciation: النوع BLOB
+
+past_pronunciation: النوع BLOB
+
+pp_pronunciation: النوع BLOB
+
+هذا يؤكد أن أسماء الأعمدة في قاعدة البيانات متطابقة مع الأسماء المستخدمة حاليًا في كود Flutter (basePronunciationColumn، pastPronunciationColumn، ppPronunciationColumn في ملف constants/app_constants.dart).
+
+بما أن أسماء الأعمدة متطابقة، فإن المشكلة ليست في عدم تطابق الأسماء. هذا يرجع بنا إلى الاحتمالات الأخرى التي ذكرناها سابقًا، مع التركيز على:
+
+هل البيانات الصوتية موجودة بالفعل في عمود base_pronunciation لجميع الأفعال؟ الرسالة flutter: VerbConjugationsBloc: basePronunciation of the first verb: null تشير إلى أن قيمة هذا العمود كانت فارغة على الأقل للفعل الأول.
+
+هل هناك خطأ في طريقة استرجاع البيانات أو تحويلها في الـ VerbConjugationsBloc؟ رغم أن الكود يبدو سليمًا، يجب التأكد من عدم وجود أي مشكلة خفية.
+
+الخطوة التالية الحاسمة:
+
+يرجى فتح قاعدة البيانات باستخدام برنامج التصفح والتحقق مباشرة من بيانات عمود base_pronunciation في جدول verb_conjugations. نريد أن نتأكد من أن هذا العمود يحتوي بالفعل على بيانات BLOB (وليست قيم NULL) لبعض الأفعال على الأقل.
+
+إذا وجدت أن عمود base_pronunciation يحتوي على قيم NULL لبعض أو كل الأفعال، فهذا يعني أن المشكلة تكمن في عملية إدخال البيانات إلى قاعدة البيانات. يجب عليك مراجعة الكود أو العملية التي استخدمتها لإضافة البيانات الصوتية والتأكد من أنها تعمل بشكل صحيح وتملأ هذا العمود بالبيانات الصحيحة.
+
+أخبرني بالنتيجة التي توصلت إليها بعد فحص بيانات عمود base_pronunciation في قاعدة البيانات. بناءً على هذه النتيجة، سنحدد الخطوة التالية لحل المشكلة.
+البيانات موجوده انا متاكد وهي امامي
+
+ممتاز! بما أنك متأكد من وجود البيانات في عمود base_pronunciation، فهذا يستبعد أن يكون سبب المشكلة هو نقص البيانات في قاعدة البيانات. هذا يعني أن التركيز يجب أن ينصب الآن على الكود وتحديدًا كيفية التعامل مع هذه البيانات.
+
+بناءً على المعلومات التي قدمتها سابقًا، الاحتمالات الرئيسية الآن هي:
+
+مشكلة في استرجاع البيانات في VerbConjugationsBloc: على الرغم من أن البيانات موجودة في قاعدة البيانات، قد يكون هناك خطأ في طريقة استعلام الـ Bloc عن البيانات أو في طريقة تحويلها إلى نموذج VerbConjugationModel. قد يؤدي هذا إلى استرجاع قيمة null لـ basePronunciation حتى لو كانت البيانات موجودة في قاعدة البيانات.
+
+مشكلة في تمرير البيانات إلى AudioBloc: قد تكون البيانات تسترجع بشكل صحيح، ولكن هناك خطأ في طريقة تمرير verb.basePronunciation! إلى AudioBloc في صفحة verb_conjugations_page.dart. علامة التعجب ! تفترض أن القيمة ليست null، ولكن الخطأ الذي ظهر سابقًا يشير إلى أنها كانت null للفعل الأول.
+
+مشكلة في معالجة البيانات في AudioBloc: حتى لو تم تمرير البيانات بشكل صحيح إلى AudioBloc، قد يكون هناك خطأ في كيفية معالجة بيانات الـ BLOB وتشغيلها باستخدام مكتبة تشغيل الصوت.
+
+مشكلة في تهيئة أو استخدام مكتبة تشغيل الصوت: قد تكون هناك مشكلة في كيفية تهيئة مكتبة تشغيل الصوت المستخدمة (على الأرجح audioplayers) أو في كيفية استخدامها لتشغيل بيانات الـ BLOB.
+
+للمضي قدمًا، نحتاج إلى مزيد من التفاصيل حول كيفية تنفيذ هذه العمليات في الكود. يرجى تزويدي بالكود الخاص بالأجزاء التالية:
+
+الكود في VerbConjugationsBloc المسؤول عن استرجاع بيانات الأفعال من قاعدة البيانات وتحويلها إلى قائمة VerbConjugationModel. هذا سيساعدنا في التأكد من أن البيانات تسترجع بشكل صحيح وأن قيمة basePronunciation تُملأ بشكل صحيح.
+
+الكود في screens/verb_conjugations_page.dart حيث يتم استدعاء AudioBloc عند النقر على الكلمة وتمرير verb.basePronunciation!. هذا سيساعدنا في فهم كيف يتم تمرير البيانات وما إذا كانت هناك أي أخطاء منطقية.
+
+الكود في AudioBloc المسؤول عن استقبال بيانات الصوت وتشغيلها باستخدام مكتبة تشغيل الصوت. هذا سيساعدنا في تحديد ما إذا كانت هناك مشكلة في كيفية معالجة بيانات الـ BLOB أو في استخدام مكتبة تشغيل الصوت.

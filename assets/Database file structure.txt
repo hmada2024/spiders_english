@@ -7,23 +7,6 @@ A complete database file has been built.
     Database file structure :
 
       " spiders_english_box.db "
-
-Table: Adjectives
-  Column: id - Type: INTEGER
-  Column: main_adj - Type: TEXT
-  Column: example - Type: TEXT
-  Column: reverse_adj - Type: TEXT      
-  Column: rev_example - Type: TEXT      
-  Column: audio - Type: BLOB
-  Indexes:
-    Index Name: uc_Adjectives
-      Column: main_adj
-      Column: reverse_adj
-    Index Name: idx_Adjectives
-      Column: main_adj
-      Column: reverse_adj
-
-
 Table: sqlite_sequence
   Column: name - Type:
   Column: seq - Type:
@@ -45,41 +28,12 @@ Table: verb_conjugations
   Column: past_form - Type: TEXT
   Column: p_p_form - Type: TEXT
   Column: verb_type - Type: TEXT
-  Column: audio_blob - Type: BLOB
+  Column: base_pronunciation - Type: BLOB
+  Column: past_pronunciation - Type: BLOB
+  Column: pp_pronunciation - Type: BLOB
   Indexes:
     Index Name: sqlite_autoindex_verb_conjugations_1
       Column: base_form
-
-
-Table: Base_Words
-  Column: id - Type: INTEGER
-  Column: base_word - Type: TEXT
-  Column: translations - Type: TEXT
-  Column: examples - Type: TEXT
-  Column: audio - Type: BLOB
-  Indexes:
-    Index Name: sqlite_autoindex_Base_Words_1
-      Column: base_word
-
-
-Table: Phrasal_verbs
-  Column: id - Type: INTEGER
-  Column: expression - Type: TEXT
-  Column: main_verb - Type: TEXT
-  Column: particle - Type: TEXT
-  Column: meaning - Type: TEXT
-  Column: example - Type: TEXT
-  Column: translation - Type: TEXT
-  Column: audio - Type: BLOB
-
-
-Table: compound_words
-  Column: id - Type: INTEGER
-  Column: main - Type: TEXT
-  Column: part1 - Type: TEXT
-  Column: part2 - Type: TEXT
-  Column: example - Type: TEXT
-  Column: audio - Type: BLOB
 
 
 Table: expressions_idioms
@@ -93,17 +47,6 @@ Table: expressions_idioms
   Indexes:
     Index Name: sqlite_autoindex_expressions_idioms_1
       Column: expression
-
-
-Table: similar_words
-  Column: id - Type: INTEGER
-  Column: base_word_id - Type: INTEGER
-  Column: similar_word - Type: TEXT
-  Column: translations - Type: TEXT
-  Column: examples - Type: TEXT
-  Column: audio - Type: BLOB
-  Foreign Keys:
-    From Column: base_word_id - To Table: Base_Words - To Column: id
 
 
 Table: english_sentences
@@ -137,6 +80,64 @@ Table: default_assets
   Column: id - Type: INTEGER
   Column: category - Type: TEXT
   Column: image - Type: BLOB
+  Column: audio - Type: BLOB
+
+
+Table: verbs_seeds
+  Column: id - Type: INTEGER
+  Column: seed_word - Type: TEXT
+  Column: translations - Type: TEXT
+  Column: examples - Type: TEXT
+  Column: audio - Type: BLOB
+  Indexes:
+    Index Name: sqlite_autoindex_verbs_seeds_1
+      Column: seed_word
+
+
+Table: verbs_branches
+  Column: id - Type: INTEGER
+  Column: seed_id - Type: INTEGER
+  Column: similar_word - Type: TEXT
+  Column: translations - Type: TEXT
+  Column: examples - Type: TEXT
+  Column: audio - Type: BLOB
+  Foreign Keys:
+    From Column: seed_id - To Table: verbs_seeds - To Column: id
+
+
+Table: adjectives
+  Column: id - Type: INTEGER
+  Column: main_adj - Type: TEXT
+  Column: example - Type: TEXT
+  Column: reverse_adj - Type: TEXT
+  Column: rev_example - Type: TEXT
+  Column: audio - Type: BLOB
+  Indexes:
+    Index Name: uc_Adjectives
+      Column: main_adj
+      Column: reverse_adj
+    Index Name: idx_Adjectives
+      Column: main_adj
+      Column: reverse_adj
+
+
+Table: phrasal_verbs
+  Column: id - Type: INTEGER
+  Column: expression - Type: TEXT
+  Column: main_verb - Type: TEXT
+  Column: particle - Type: TEXT
+  Column: meaning - Type: TEXT
+  Column: example - Type: TEXT
+  Column: translation - Type: TEXT
+  Column: audio - Type: BLOB
+
+
+Table: compound_words
+  Column: id - Type: INTEGER
+  Column: main - Type: TEXT
+  Column: part1 - Type: TEXT
+  Column: part2 - Type: TEXT
+  Column: example - Type: TEXT
   Column: audio - Type: BLOB
 ___________
 
