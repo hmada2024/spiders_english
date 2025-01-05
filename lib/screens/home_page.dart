@@ -1,5 +1,7 @@
 // screens/home_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_box_english/blocs/nouns_bloc.dart';
 import 'package:learn_box_english/constants/constants.dart';
 import 'package:learn_box_english/screens/adjectives_page.dart';
 import 'package:learn_box_english/screens/nouns_page.dart';
@@ -94,6 +96,8 @@ class HomePage extends StatelessWidget {
                   width: buttonWidth,
                   child: ElevatedButton(
                     onPressed: () {
+                      // التأكد من أن الـ NounsBloc موجود ومحمل قبل الانتقال
+                      BlocProvider.of<NounsBloc>(context).add(LoadNouns());
                       Navigator.push(
                         context,
                         MaterialPageRoute(

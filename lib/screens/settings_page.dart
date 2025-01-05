@@ -44,22 +44,26 @@ class _SettingsPageState extends State<SettingsPage> {
               );
               final db = await DatabaseHelper().database;
               await DatabaseHelper.cacheDatabase(db);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Data cached in RAM')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Data cached in RAM')),
+                );
+              }
             },
             child: const Text('Load Data into RAM'),
           ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
           ElevatedButton(
             onPressed: () {
               DatabaseHelper.clearCache();
               setState(() {
                 _isCacheEnabled = false;
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('RAM cache cleared')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('RAM cache cleared')),
+                );
+              }
             },
             child: const Text('Clear Data from RAM'),
           ),

@@ -83,9 +83,7 @@ LearnBox English employs a local **SQLite database** (`just_take.db`) to store a
 *   **Data Fetching:** Blocs use the `DatabaseHelper` to retrieve data from the database. For example, `NounsBloc` uses `_databaseHelper.getNouns()` to fetch noun data.
 *   **Data Presentation:** The fetched data is typically transformed into model objects (e.g., `NounModel`) before being passed to the UI for display.
 
-**5. Application File Structure:**
-
-spider_english/
+**5. spider_english/
 ├── assets/
 │   ├── audio/
 │   └── just_take.db
@@ -104,6 +102,7 @@ spider_english/
 │   │   └── database_initializer.dart
 │   ├── models/
 │   │   ├── adjective_model.dart
+│   │   ├── match_card_model.dart  // إضافة نموذج بيانات بطاقة المطابقة
 │   │   ├── noun_model.dart
 │   │   └── verb_conjugation_model.dart
 │   ├── screens/
@@ -111,14 +110,16 @@ spider_english/
 │   │   ├── home_page.dart
 │   │   ├── nouns_page.dart
 │   │   ├── settings_page.dart
-│   │   └── verb_conjugations_page.dart
+│   │   ├── verb_conjugations_page.dart
+│   │   └── games/             // مجلد جديد للألعاب
+│   │       └── matching_game_page.dart
 │   ├── widgets/
 │   │   ├── audio_player_widget.dart
-│   │   └── data_loader.dart
+│   │   ├── data_loader.dart
+│   │   ├── match_card_widget.dart      // إضافة ودجت بطاقة المطابقة
+│   │   ├── matching_game_controls.dart // إضافة ودجت عناصر تحكم اللعبة
+│   │   └── matching_game_grid.dart     // إضافة ودجت شبكة لعبة المطابقة
 │   └── main.dart
-├── pubspec.lock
-├── pubspec.yaml
-└── المشاكل اللي واجهتني وحلها .txt
 └── Database file structure.txt
 تقرير مفصل عن تطبيق Spider English
 يقدم هذا التقرير نظرة شاملة على تطبيق Spider English بناءً على ملفات الكود المتوفرة. يغطي التقرير ميزات التطبيق، وبنيته، والمكتبات المستخدمة، وإدارة البيانات، وهيكل الملفات، ونقاط القوة، والتحسينات المحتملة.
