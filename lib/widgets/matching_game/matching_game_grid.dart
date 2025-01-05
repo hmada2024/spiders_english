@@ -1,7 +1,7 @@
 // lib/widgets/matching_game_grid.dart
 import 'package:flutter/material.dart';
 import 'package:learn_box_english/models/match_card_model.dart';
-import 'package:learn_box_english/widgets/matching_game/match_card_widget.dart';
+import 'package:learn_box_english/widgets/matching_game/match_card_widget.dart'; // مسار معدل
 
 class MatchingGameGrid extends StatelessWidget {
   final List<MatchCard> matchCards;
@@ -19,18 +19,17 @@ class MatchingGameGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(15.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columns,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
-        childAspectRatio: 0.8,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10.0,
+        childAspectRatio: 0.75,
       ),
       itemCount: matchCards.length,
       itemBuilder: (context, index) {
         final card = matchCards[index];
         return MatchCardWidget(
-          // استخدام الـ MatchCardWidget هنا
           card: card,
           onTap: () => onCardTap(card),
         );

@@ -17,7 +17,7 @@ class AdjectivesPage extends StatelessWidget {
         title: const Text('Adjectives'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: BlocProvider(
           create: (context) =>
               AdjectivesBloc(DatabaseHelper())..add(LoadAdjectives()),
@@ -29,14 +29,17 @@ class AdjectivesPage extends StatelessWidget {
               return []; // Return an empty list by default
             },
             builder: (context, adjectives) {
-              return ListView.builder(
+              return ListView.separated(
                 itemCount: adjectives.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 8.0),
                 itemBuilder: (context, index) {
                   final adjective = adjectives[index];
                   return Card(
                     child: ListTile(
                       title: Text(adjective.mainAdj),
-                      subtitle: Text(adjective.example),
+                      subtitle: Text(adjective.example,
+                          style: TextStyle(color: Colors.grey.shade600)),
                       trailing: AudioPlayerWidget(audioData: adjective.audio),
                     ),
                   );

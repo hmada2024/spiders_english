@@ -55,19 +55,23 @@ class _MatchingGamePageState extends State<MatchingGamePage> {
             return Column(
               children: [
                 SizedBox(
+                  // استخدم SizedBox لتحديد ارتفاع عنصر التحكم
                   height: controlsHeight,
-                  child: MatchingGameControls(
-                    selectedCategory: _selectedCategory,
-                    availableCategories: availableCategories,
-                    onCategoryChanged: (newValue) {
-                      setState(() {
-                        _selectedCategory = newValue;
-                        _generateCards(state.nouns);
-                      });
-                    },
-                    onRefresh: availableCategories.isNotEmpty
-                        ? () => _generateCards(state.nouns, refresh: true)
-                        : null,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: MatchingGameControls(
+                      selectedCategory: _selectedCategory,
+                      availableCategories: availableCategories,
+                      onCategoryChanged: (newValue) {
+                        setState(() {
+                          _selectedCategory = newValue;
+                          _generateCards(state.nouns);
+                        });
+                      },
+                      onRefresh: availableCategories.isNotEmpty
+                          ? () => _generateCards(state.nouns, refresh: true)
+                          : null,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -77,6 +81,12 @@ class _MatchingGamePageState extends State<MatchingGamePage> {
                     columns: columns,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text('Score: $score',
+                      style: const TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold)),
+                ),
               ],
             );
           } else if (state is NounsLoading) {
@@ -84,7 +94,7 @@ class _MatchingGamePageState extends State<MatchingGamePage> {
           } else if (state is NounsError) {
             return Center(child: Text('Error loading nouns: ${state.message}'));
           } else {
-            return const Center(child: Text('لا يوجد بيانات'));
+            return const Center(child: Text('No data available.'));
           }
         },
       ),

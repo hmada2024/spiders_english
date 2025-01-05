@@ -17,7 +17,7 @@ class VerbConjugationsPage extends StatelessWidget {
         title: const Text('Verb Conjugations'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: BlocProvider(
           create: (context) =>
               VerbConjugationsBloc(DatabaseHelper())..add(LoadVerbs()),
@@ -30,13 +30,15 @@ class VerbConjugationsPage extends StatelessWidget {
               return []; // Corrected: Return an empty list by default
             },
             builder: (context, verbs) {
-              return ListView.builder(
+              return ListView.separated(
                 itemCount: verbs.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 8.0),
                 itemBuilder: (context, index) {
                   final verb = verbs[index];
                   return Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Row(
                         children: [
                           Expanded(
@@ -46,9 +48,12 @@ class VerbConjugationsPage extends StatelessWidget {
                               children: [
                                 Text(verb.baseForm,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0)),
                                 Text('(${verb.translation})',
-                                    style: const TextStyle(fontSize: 12)),
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade600)),
                               ],
                             ),
                           ),
@@ -59,7 +64,7 @@ class VerbConjugationsPage extends StatelessWidget {
                             child: Center(child: Text(verb.pPForm)),
                           ),
                           SizedBox(
-                              width: 48,
+                              width: 40,
                               child:
                                   AudioPlayerWidget(audioData: verb.audioBlob)),
                         ],

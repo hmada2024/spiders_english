@@ -1,4 +1,4 @@
-// lib/widgets/match_card_widget.dart
+// lib/widgets/matching_game/match_card_widget.dart
 import 'package:flutter/material.dart';
 import 'package:learn_box_english/models/match_card_model.dart';
 
@@ -13,20 +13,31 @@ class MatchCardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 4.0,
-        color: card.isFlipped ? Colors.amber[100] : null,
-        child: Center(
+        elevation: card.isFlipped ? 6.0 : 4.0,
+        color: card.isFlipped ? Colors.amber[100] : Colors.blueGrey[50],
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
           child: card.isFlipped
-              ? card.image != null
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.memory(card.image!),
-                    )
-                  : Text(
-                      card.value,
-                      textAlign: TextAlign.center,
-                    )
-              : const Text('?', style: TextStyle(fontSize: 24)),
+              ? Center(
+                  child: card.image != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.memory(card.image!),
+                        )
+                      : Text(
+                          card.value,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
+                )
+              : const Center(
+                  child: Text('?',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                ),
         ),
       ),
     );

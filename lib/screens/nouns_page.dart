@@ -17,7 +17,7 @@ class NounsPage extends StatelessWidget {
         title: const Text('Nouns'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: BlocProvider(
           create: (context) => NounsBloc(DatabaseHelper())..add(LoadNouns()),
           child: DataLoader<NounsBloc, NounsState, NounModel>(
@@ -28,8 +28,10 @@ class NounsPage extends StatelessWidget {
               return []; // Return an empty list by default
             },
             builder: (context, nouns) {
-              return ListView.builder(
+              return ListView.separated(
                 itemCount: nouns.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 8.0),
                 itemBuilder: (context, index) {
                   final noun = nouns[index];
                   return Card(
@@ -38,7 +40,8 @@ class NounsPage extends StatelessWidget {
                           ? Image.memory(noun.image!, width: 50, height: 50)
                           : const Icon(Icons.image_not_supported),
                       title: Text(noun.name),
-                      subtitle: Text(noun.category),
+                      subtitle: Text(noun.category,
+                          style: TextStyle(color: Colors.grey.shade600)),
                       trailing: AudioPlayerWidget(audioData: noun.audio),
                     ),
                   );

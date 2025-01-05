@@ -16,10 +16,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = screenWidth * 0.7;
-    final buttonPadding = EdgeInsets.symmetric(vertical: screenWidth * 0.02);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConstants.appName),
@@ -35,113 +31,87 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NounsPage()),
-                      );
-                    },
-                    child: const Text('Nouns'),
-                  ),
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHomePageButton(
+              context: context,
+              title: 'Nouns',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NounsPage()),
               ),
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AdjectivesPage()),
-                      );
-                    },
-                    child: const Text('Adjectives'),
-                  ),
-                ),
+            ),
+            _buildHomePageButton(
+              context: context,
+              title: 'Adjectives',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AdjectivesPage()),
               ),
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const VerbConjugationsPage()),
-                      );
-                    },
-                    child: const Text('Verb Conjugations'),
-                  ),
-                ),
+            ),
+            _buildHomePageButton(
+              context: context,
+              title: 'Verb Conjugations',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const VerbConjugationsPage()),
               ),
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // التأكد من أن الـ NounsBloc موجود ومحمل قبل الانتقال
-                      BlocProvider.of<NounsBloc>(context).add(LoadNouns());
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MatchingGamePage()),
-                      );
-                    },
-                    child: const Text('Matching Game'),
-                  ),
-                ),
+            ),
+            _buildHomePageButton(
+              context: context,
+              title: 'Matching Game',
+              onPressed: () {
+                BlocProvider.of<NounsBloc>(context).add(LoadNouns());
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MatchingGamePage()),
+                );
+              },
+            ),
+            _buildHomePageButton(
+              context: context,
+              title: 'Fill in the Blanks',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FillBlanksGamePage()),
               ),
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const FillBlanksGamePage()),
-                      );
-                    },
-                    child: const Text('Fill in the Blanks'),
-                  ),
-                ),
+            ),
+            _buildHomePageButton(
+              context: context,
+              title: 'Multiple Choice Quiz',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MultipleChoiceGamePage()),
               ),
-              Padding(
-                padding: buttonPadding,
-                child: SizedBox(
-                  width: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const MultipleChoiceGamePage()),
-                      );
-                    },
-                    child: const Text('Multiple Choice Quiz'),
-                  ),
-                ),
-              ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomePageButton({
+    required BuildContext context,
+    required String title,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 16.0),
           ),
         ),
       ),

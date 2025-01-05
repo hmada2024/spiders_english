@@ -51,13 +51,17 @@ class MyApp extends StatelessWidget {
         primaryColorDark: AppConstants.primaryColorDark,
         hintColor: AppConstants.accentColor,
         fontFamily: AppConstants.fontFamily,
+        scaffoldBackgroundColor: AppConstants.backgroundColor,
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: AppConstants.textColorPrimary),
         ),
         cardTheme: CardTheme(
           color: AppConstants.cardColor,
-          elevation: 2.0,
+          elevation: 3.0,
+          shadowColor: Colors.grey.shade200,
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppConstants.primaryColor,
@@ -67,12 +71,29 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
           iconTheme: IconThemeData(color: Colors.white),
+          elevation: 2.0,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppConstants.primaryColor,
             foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
           ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: AppConstants.accentColor, width: 2.0),
+          ),
+          labelStyle: const TextStyle(color: AppConstants.textColorSecondary),
         ),
         iconTheme: const IconThemeData(
           color: AppConstants.accentColor,
