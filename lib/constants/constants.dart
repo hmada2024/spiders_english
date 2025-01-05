@@ -24,19 +24,16 @@ class AppConstants {
       'spiders_english_box.db/spiders_english_box.db';
 
   // Table Names
-  static const String adjectivesTable =
-      'adjectives'; // تم التحديث إلى حروف صغيرة
+  static const String adjectivesTable = 'adjectives';
   static const String nounsTable = 'nouns';
   static const String verbConjugationsTable = 'verb_conjugations';
   static const String verbsSeedsTable = 'verbs_seeds';
-  static const String phrasalVerbsTable =
-      'phrasal_verbs'; // تم التحديث إلى حروف صغيرة
+  static const String phrasalVerbsTable = 'phrasal_verbs';
   static const String compoundWordsTable = 'compound_words';
   static const String expressionsIdiomsTable = 'expressions_idioms';
   static const String verbsBranchesTable = 'verbs_branches';
   static const String englishSentencesTable = 'english_sentences';
-  static const String modalSemiModalVerbsTable =
-      'modal_semi_modal_verbs'; // تم التحديث إلى حروف صغيرة
+  static const String modalSemiModalVerbsTable = 'modal_semi_modal_verbs';
   static const String readingAndListeningTable = 'reading_and_listening';
   static const String sqliteSequenceTable = 'sqlite_sequence';
 
@@ -61,7 +58,11 @@ class AppConstants {
   static const String pastFormColumn = 'past_form';
   static const String pPFormColumn = 'p_p_form';
   static const String verbTypeColumn = 'verb_type';
-  static const String audioBlobColumn = 'audio_blob';
+  static const String basePronunciationColumn =
+      'base_pronunciation'; // تم التحديث من audio_blob
+  static const String pastPronunciationColumn =
+      'past_pronunciation'; // تمت الإضافة
+  static const String ppPronunciationColumn = 'pp_pronunciation'; // تمت الإضافة
 
   // Base Words Table Columns (تم التحديث ليناسب verbs_seeds)
   static const String seedWordColumn = 'seed_word';
