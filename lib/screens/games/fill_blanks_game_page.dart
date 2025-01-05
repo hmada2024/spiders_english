@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/english_sentences_bloc.dart';
 import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/english_sentence_model.dart';
-import 'package:learn_box_english/widgets/data_loader.dart';
+import 'package:learn_box_english/widgets/common/data_loader.dart';
 
 class FillBlanksGamePage extends StatefulWidget {
   const FillBlanksGamePage({super.key});

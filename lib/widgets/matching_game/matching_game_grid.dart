@@ -1,7 +1,7 @@
 // lib/widgets/matching_game_grid.dart
 import 'package:flutter/material.dart';
 import 'package:learn_box_english/models/match_card_model.dart';
-import 'package:learn_box_english/widgets/match_card_widget.dart';
+import 'package:learn_box_english/widgets/matching_game/match_card_widget.dart';
 
 class MatchingGameGrid extends StatelessWidget {
   final List<MatchCard> matchCards;

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/nouns_bloc.dart'; // يمكنك تغيير البلوك حسب نوع الأسئلة
 import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/noun_model.dart'; // يمكنك تغيير النموذج حسب نوع الأسئلة
-import 'package:learn_box_english/widgets/data_loader.dart';
+import 'package:learn_box_english/widgets/common/data_loader.dart';
 import 'dart:math';
 
 class MultipleChoiceGamePage extends StatefulWidget {

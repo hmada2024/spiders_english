@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/verb_conjugations_bloc.dart';
 import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/verb_conjugation_model.dart';
-import 'package:learn_box_english/widgets/audio_player_widget.dart';
-import 'package:learn_box_english/widgets/data_loader.dart';
+import 'package:learn_box_english/widgets/common/audio_player_widget.dart';
+import 'package:learn_box_english/widgets/common/data_loader.dart';
 
 class VerbConjugationsPage extends StatelessWidget {
   const VerbConjugationsPage({super.key});

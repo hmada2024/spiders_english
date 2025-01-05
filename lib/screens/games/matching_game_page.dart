@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/nouns_bloc.dart';
 import 'package:learn_box_english/models/noun_model.dart';
 import 'package:learn_box_english/models/match_card_model.dart';
-import 'package:learn_box_english/widgets/matching_game_controls.dart';
-import 'package:learn_box_english/widgets/matching_game_grid.dart';
+import 'package:learn_box_english/widgets/matching_game/matching_game_controls.dart';
+import 'package:learn_box_english/widgets/matching_game/matching_game_grid.dart';
 
 class MatchingGamePage extends StatefulWidget {
   const MatchingGamePage({super.key});

@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_box_english/blocs/adjectives_bloc.dart';
 import 'package:learn_box_english/database/database_helper.dart';
 import 'package:learn_box_english/models/adjective_model.dart';
-import 'package:learn_box_english/widgets/audio_player_widget.dart';
-import 'package:learn_box_english/widgets/data_loader.dart';
+import 'package:learn_box_english/widgets/common/audio_player_widget.dart';
+import 'package:learn_box_english/widgets/common/data_loader.dart';
 
 class AdjectivesPage extends StatelessWidget {
   const AdjectivesPage({super.key});
