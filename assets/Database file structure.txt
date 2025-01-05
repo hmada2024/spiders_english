@@ -12,8 +12,8 @@ Table: Adjectives
   Column: id - Type: INTEGER
   Column: main_adj - Type: TEXT
   Column: example - Type: TEXT
-  Column: reverse_adj - Type: TEXT
-  Column: rev_example - Type: TEXT
+  Column: reverse_adj - Type: TEXT      
+  Column: rev_example - Type: TEXT      
   Column: audio - Type: BLOB
   Indexes:
     Index Name: uc_Adjectives
@@ -27,23 +27,6 @@ Table: Adjectives
 Table: sqlite_sequence
   Column: name - Type:
   Column: seq - Type:
-
-
-Table: nouns
-  Column: id - Type: INTEGER
-  Column: name - Type: TEXT
-  Column: image - Type: BLOB
-  Column: audio - Type: BLOB
-  Column: category - Type: TEXT
-
-
-Table: Modal_SemiModal_Verbs
-  Column: id - Type: INTEGER
-  Column: main - Type: TEXT
-  Column: example - Type: TEXT
-  Column: tense - Type: TEXT
-  Column: type - Type: TEXT
-  Column: translation - Type: TEXT
 
 
 Table: reading_and_listening
@@ -120,7 +103,7 @@ Table: similar_words
   Column: examples - Type: TEXT
   Column: audio - Type: BLOB
   Foreign Keys:
-    From Column: base_word_id - To Table: Base_Words - To Column: id        
+    From Column: base_word_id - To Table: Base_Words - To Column: id
 
 
 Table: english_sentences
@@ -128,6 +111,33 @@ Table: english_sentences
   Column: sentence - Type: TEXT
   Column: answer - Type: TEXT
   Column: translation - Type: TEXT
+
+
+Table: modal_semi_modal_verbs
+  Column: id - Type: INTEGER
+  Column: main - Type: TEXT
+  Column: example - Type: TEXT
+  Column: tense - Type: TEXT
+  Column: type - Type: TEXT
+  Column: translation - Type: TEXT
+
+
+Table: nouns
+  Column: id - Type: INTEGER
+  Column: name - Type: TEXT
+  Column: image - Type: BLOB
+  Column: audio - Type: BLOB
+  Column: category - Type: TEXT
+  Indexes:
+    Index Name: sqlite_autoindex_nouns_1
+      Column: name
+
+
+Table: default_assets
+  Column: id - Type: INTEGER
+  Column: category - Type: TEXT
+  Column: image - Type: BLOB
+  Column: audio - Type: BLOB
 ___________
 
 App Description and Features
@@ -232,209 +242,6 @@ The app can be further customized or expanded based on specific requirements or 
 
 ___________
 
-App Features:
-Offline Local Database:
-
-The app operates entirely offline, with all data (texts, images, audio) stored in a local SQLite database.
-
-Comprehensive Learning Content:
-
-Vocabulary:
-
-Learn base words, synonyms, compound words, and phrasal verbs.
-
-Grammar:
-
-Detailed explanations of verb tenses, conjugations, adjectives, and modal verbs.
-
-Reading & Listening:
-
-Diverse texts with translations and audio to improve reading and listening skills.
-
-Expressions & Idioms:
-
-Learn common phrases, proverbs, and English idioms.
-
-Interactive Activities:
-
-Quizzes:
-
-Multiple-choice tests to assess understanding of vocabulary and grammar.
-
-Educational Games:
-
-Games like selecting the correct word, matching words with images, and drag-and-drop activities.
-
-Drag-and-Drop Exercises:
-
-Interactive exercises to reinforce word and sentence structure retention.
-
-Audio and Visual Support:
-
-Every word or sentence comes with audio pronunciation to improve speaking and listening skills.
-
-Illustrative images for vocabulary and nouns to enhance understanding and memorization.
-
-Content Filtering:
-
-Filter content by category (vocabulary, grammar, reading, etc.) or difficulty level.
-
-Quick search for words or phrases within the app.
-
-Progress Tracking:
-
-System to track user progress in learning vocabulary and grammar.
-
-Statistics showing mastered areas and those needing improvement.
-
-Clean and Simple UI:
-
-Modern and user-friendly design suitable for all age groups.
-
-Logical organization of content for easy navigation.
-
-Learn Anytime, Anywhere:
-
-The app works entirely offline, allowing users to learn at their own pace, anytime, anywhere.
-
-Multi-Language Support:
-
-Translations of all words and phrases into Arabic (or other languages) to help users better understand the content.
-
-Regular Updates:
-
-Ability to add new content through updates without requiring a constant internet connection.
-
-Target Audience:
-Students looking to improve their English language skills.
-
-Professionals needing to learn English for work purposes.
-
-Anyone interested in self-learning English without relying on the internet.
-
-Technologies Used:
-Flutter: For building a cross-platform app with a single codebase.
-
-SQLite Database: For local data storage and offline functionality.
-
-Bloc Library: For state management, ensuring clean code separation between business logic and UI.
-
-Audio and Image Support: Using BLOB data type for audio and images to provide a rich learning experience.
-
-Why LearnBox English?
-LearnBox English combines comprehensiveness and flexibility, offering everything you need to learn English in one place, accessible without an internet connection. The app is designed to be an effective and enjoyable learning tool, helping users achieve their language goals with ease.
-
-Additional Notes:
-The app is built with clean architecture principles, ensuring separation of concerns and maintainability.
-
-The Bloc library is used for state management, making the codebase modular and scalable.
-
-The app is fully offline, making it ideal for users with limited or no internet access.
-
-Customization: The app can be further customized or expanded based on specific requirements or user feedback.
-
-User Interface and Experience:
-Home Screen:
-
-A clean and intuitive home screen with navigation options to different learning sections (Vocabulary, Grammar, Reading, Listening, etc.).
-
-Quick access to recent lessons and progress tracking.
-
-Vocabulary Section:
-
-Base Words:
-
-Display of base words with translations, examples, and audio pronunciation.
-
-Synonyms and Similar Words:
-
-List of similar words with translations and examples, linked to base words.
-
-Compound Words and Phrasal Verbs:
-
-Interactive display of compound words and phrasal verbs with meanings and examples.
-
-Grammar Section:
-
-Verb Conjugations:
-
-Detailed conjugation tables for verbs, including base, past, and past participle forms.
-
-Modal and Semi-Modal Verbs:
-
-Explanation and examples of modal verbs with their usage.
-
-Adjectives:
-
-List of adjectives with examples and reverse forms.
-
-Reading and Listening Section:
-
-Texts and Audio:
-
-Diverse reading materials with corresponding audio files for listening practice.
-
-Translation Support:
-
-Translations of texts to aid understanding.
-
-Expressions and Idioms Section:
-
-Idioms and Proverbs:
-
-List of common English idioms and proverbs with meanings and examples.
-
-Audio Pronunciation:
-
-Audio files for each expression to improve pronunciation.
-
-Interactive Activities:
-
-Quizzes:
-
-Multiple-choice quizzes to test knowledge of vocabulary and grammar.
-
-Educational Games:
-
-Games like "Select the Correct Word," "Match Words with Images," and "Drag-and-Drop" activities.
-
-Sentence Exercises:
-
-Drag-and-drop exercises to practice sentence structure and word placement.
-
-Progress Tracking:
-
-Progress Dashboard:
-
-Overview of progress in different sections (Vocabulary, Grammar, etc.).
-
-Statistics:
-
-Detailed statistics showing areas of improvement and mastered topics.
-
-Search and Filter:
-
-Search Bar:
-
-Quick search for specific words, phrases, or sentences.
-
-Filter Options:
-
-Filter content by category (e.g., Vocabulary, Grammar) or difficulty level.
-
-Settings:
-
-Language Settings:
-
-Option to switch between English and other languages for translations.
-
-Audio Settings:
-
-Volume control and audio playback options.
-
-Conclusion:
-LearnBox English is a versatile and comprehensive offline English learning app that offers a rich and diverse learning experience. With its clean and intuitive interface, extensive content, and interactive features, it is an ideal tool for anyone looking to improve their English language skills at their own pace, anytime, and anywhere.
-___________
 
 Comprehensive Offline English Learning App
 

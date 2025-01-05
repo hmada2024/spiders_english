@@ -1,7 +1,6 @@
 // database/database_helper.dart
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:learn_box_english/constants/constants.dart';
 import 'package:path/path.dart';
@@ -11,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
-  static Map<String, List<Map<String, dynamic>>> _cachedData = {};
+  static final Map<String, List<Map<String, dynamic>>> _cachedData = {};
   static bool _isCacheEnabled = false;
 
   factory DatabaseHelper() {
