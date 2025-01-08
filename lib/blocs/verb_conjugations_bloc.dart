@@ -36,11 +36,19 @@ class VerbConjugationsBloc
 
   Future<void> _onLoadVerbs(
       LoadVerbs event, Emitter<VerbConjugationsState> emit) async {
+    print('VerbConjugationsBloc: Received LoadVerbs event');
     emit(VerbConjugationsLoading());
     try {
       final verbsData = await _databaseHelper.getVerbConjugations();
+      print(
+          'VerbConjugationsBloc: Number of verbsData fetched: ${verbsData.length}');
       final verbs =
           verbsData.map((data) => VerbConjugationModel.fromJson(data)).toList();
+      print('VerbConjugationsBloc: Number of verbs mapped: ${verbs.length}');
+      if (verbs.isNotEmpty) {
+        print(
+            'VerbConjugationsBloc: basePronunciation of the first verb: ${verbs.first.basePronunciation?.length}');
+      }
       emit(VerbsLoaded(verbs));
     } catch (e) {
       emit(VerbConjugationsError('Could not load verb conjugations: $e'));
